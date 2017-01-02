@@ -1,8 +1,8 @@
 var version = 7;
 var Neuvol;
 var game;
-var FPS = 0;
-var autoFPS = true;
+var FPS = 60;
+var autoFPS = false;
 var lastScore = (new Array(8)).fill(null);
 var scoreCursor = 0;
 
@@ -16,11 +16,6 @@ var heroCount = 0;
 
 var images = {};
 
-function clearData() {
-  delete localStorage['nn' + version + 'generation'];
-  delete localStorage['nn' + version + 'gen'];
-}
-
 function avg(elements) {
   return elements.filter(e => e !== null).reduce(function(sum, a,i,ar) {
     sum += a; return i==ar.length-1?(ar.length==0?0:sum/ar.length):sum
@@ -30,6 +25,7 @@ function avg(elements) {
 (function() {
   var timeouts = [];
   var messageName = "t" + Math.random().toFixed(3);
+
   // Like setTimeout, but only takes a function argument.  There's
   // no time argument (always zero) and no arguments (you have to
   // use a closure).
@@ -49,6 +45,7 @@ function avg(elements) {
   }
 
   window.addEventListener("message", handleMessage, true);
+
     // Add the one thing we want added to the window object.
     window.setZeroTimeout = setZeroTimeout;
   })();
@@ -86,7 +83,7 @@ function avg(elements) {
       collisionSegments(x1, y1, x2, y2, ax, ay, ax + aw, ay),
       collisionSegments(x1, y1, x2, y2, ax, ay, ax, ay + ah),
       collisionSegments(x1, y1, x2, y2, ax + aw, ay,  ax + aw, ay + ah),
-      collisionSegments(x1, y1, x2, y2, ax, ay + ah,  ax + aw, ay + ah) 
+      collisionSegments(x1, y1, x2, y2, ax, ay + ah,  ax + aw, ay + ah)   
     ];
 
     for(var i in d) {
@@ -99,12 +96,7 @@ function avg(elements) {
   }
 
   var speed = function(fps) {
-    if (fps === -1) {
-      autoFPS = true;
-    } else {
-      autoFPS = false;
-      FPS = parseInt(fps);
-    }
+    FPS = parseInt(fps);
   }
 
   var loadImages = function(sources, callback) {
@@ -180,7 +172,7 @@ function avg(elements) {
             dbss = d/maxSensorSize;
             if(dbss < sensors[j]) {
               sensors[j] = dbss;
-            }   
+            }
           }
         }
       }
@@ -271,7 +263,7 @@ var Game = function() {
 
   this.spawnInterval = 10;//120;
   this.interval = 0;
-  this.maxAsteroids = 8;
+  this.maxAsteroids = 1;
 
   this.gen = [];
 
@@ -284,18 +276,6 @@ Game.prototype.start = function() {
   this.score = 0;
   this.asteroids = [];
   this.ships = [];
-
-  if (this.generation % 10 === 9) {
-    localStorage['nn' + version + 'generation'] = this.generation;
-    localStorage['nn' + version + 'gen'] = JSON.stringify(game.gen.map((gen, i) => gen.getSave()));
-    localStorage['nn' + version + 'data'] = JSON.stringify({heroCount, heroScore, generation: game.generation});
-  }
-
-  this.gen = Neuvol.nextGeneration();
-
-  if (hero) {
-    this.gen[10].setSave(hero);
-  }
 
   for(var i in this.gen) {
     var s = new Ship();
@@ -318,6 +298,7 @@ Game.prototype.update = function() {
       for (s = 0; s < memorySize; s++) {
         ship.sensorsWithMemory[nbSensors + s] = ship.memory[s];
       }
+      // pulse
       ship.sensorsWithMemory[nbSensors + memorySize] = (this.score % 100) / 100;
 
       gen = game.gen[i];
@@ -349,14 +330,15 @@ Game.prototype.update = function() {
         ship.alive = false;
         this.alives--;
         if (this.alives < 4 && autoFPS) {
-          FPS = 60;
+          FPS = 120;
         }
-        Neuvol.networkScore(gen, this.score);
+        //Neuvol.networkScore(gen, this.score);
         if(this.isItEnd()) {
           if (autoFPS) {
             FPS = 0;
           }
           if (game.score > heroScore) {
+            debugger;
             hero = gen.getSave();
             heroScore = game.score;
             if (i !== 10) {
@@ -370,7 +352,7 @@ Game.prototype.update = function() {
     }
   }
 
-  for (var i = 0; i < this.asteroids.length; i++) {
+  for (var i = 1; i < this.asteroids.length; i++) {
     this.asteroids[i].update();
   }
 
@@ -399,9 +381,9 @@ Game.prototype.update = function() {
 Game.prototype.spawnAsteroids = function() {
   var spawns = [
     {x:0 + 30, y:0 + 30},
-    {x:0 + 30, y:this.height - 50},
-    {x:this.width - 50, y:this.height - 50},
-    {x:this.width - 50, y:0 + 30}
+    //{x:0 + 30, y:this.height - 50},
+    //{x:this.width - 50, y:this.height - 50},
+    //{x:this.width - 50, y:0 + 30}
   ];
   for(var i in spawns) {
     var a = new Asteroid({
@@ -423,10 +405,11 @@ Game.prototype.isItEnd = function() {
 
 Game.prototype.display = function() {
   //this.ctx.clearRect(0, 0, this.width, this.height);
-  //this.ctx.fillStyle='#000';
-  //this.ctx.fillRect(0,0,this.width, this.height);
+  this.ctx.fillStyle='#000';
+  this.ctx.fillRect(0,0,this.width, this.height);
   this.ctx.drawImage(images.background, 0, 0, this.width, this.height);
   for (i = this.ships.length - 1; i >= 0; i--) {
+  //for(var i in this.ships) {
     if(this.ships[i].alive) {
       if (this.alives < 4) {
         for(var j = 0; j < nbSensors; j++) {
@@ -457,7 +440,7 @@ Game.prototype.display = function() {
   this.ctx.strokeStyle = 'yellow';
   for(var i in this.asteroids) {
     this.ctx.strokeRect(this.asteroids[i].x, this.asteroids[i].y, this.asteroids[i].width, this.asteroids[i].height);
-    this.ctx.drawImage(images.asteroid, this.asteroids[i].x, this.asteroids[i].y, this.asteroids[i].width, this.asteroids[i].height);
+    //this.ctx.drawImage(images.asteroid, this.asteroids[i].x, this.asteroids[i].y, this.asteroids[i].width, this.asteroids[i].height);
   }
 
   this.ctx.fillStyle = 'white';
@@ -480,6 +463,7 @@ Game.prototype.display = function() {
       if (y++ > 5) break;
     }
   }
+  
 }
 
 window.onload = function() {
@@ -490,28 +474,34 @@ window.onload = function() {
   };
 
   var start = function() {
+    if (localStorage['nn' + version + 'generation']) {
+      var data = JSON.parse(localStorage['nn' + version + 'gen'])[10];
+    } else {
+      var data = hero;
+    }
+
+    var sublayers = [];
+    for (var i = 1; i < data.neurons.length - 1; i++) {
+      sublayers.push(data.neurons[i]);
+    }
+    console.log([data.neurons[0], sublayers, data.neurons[sublayers.length + 1]]);
+
     Neuvol = new Neuroevolution({
-      population: 200,
-      network:[nbSensors + memorySize + 1, [9], 5],
+      population: 1,
+      network:[data.neurons[0], sublayers, data.neurons[sublayers.length + 1]],
       randomBehaviour:0.3,
       mutationRate:0.4, 
       mutationRange:0.8, 
     });
+    
     game = new Game();
+    game.gen = Neuvol.nextGeneration();
     game.start();
-
-    if (localStorage['nn' + version + 'generation']) {
-      var data = JSON.parse(localStorage['nn' + version + 'gen']);
-      data.forEach((gen, i) => game.gen[i] && game.gen[i].setSave(gen));
-      game.generation = parseInt(localStorage['nn' + version + 'generation']);
-
-      data = JSON.parse(localStorage['nn' + version + 'data']);
-      heroCount = data.heroCount;
-      heroScore = data.heroScore;
-    }
+  
+    game.gen[0].setSave(data);
 
     if (FPS === 0) {
-      setZeroTimeout(function() {
+      setTimeout(function() {
         game.update();
       });
     } else {
@@ -519,6 +509,12 @@ window.onload = function() {
         game.update();
       }, 1000/FPS);
     }
+
+    game.spawnAsteroids();
+    game.canvas.onmousemove = (event) => {
+      game.asteroids[0].x = event.clientX - 25;
+      game.asteroids[0].y = event.clientY - 25;
+    };
 
     function render() {
       setTimeout(() => requestAnimationFrame(render), 20);

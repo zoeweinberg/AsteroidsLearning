@@ -12,7 +12,7 @@ var Neuroevolution = function(options){
 		elitism:0.2,
 		randomBehaviour:0.2,
 		mutationRate:0.1,
-		mutationRange:0.5,
+		mutationRange:0.6,
 		network:[1, [1], 1],
 		historic:0,
 		lowHistoric:false,
@@ -31,14 +31,13 @@ var Neuroevolution = function(options){
 	self.set(options);
 
 	//NEURON
-	var Neuron = function(){
+	var Neuron = function(nbInputs){
 		this.value = 0;
-		this.weights = [];
+		this.weights = new Float32Array(nbInputs);
 	}
 	Neuron.prototype.populate = function(nb){
-		this.weights = [];
 		for(var i = 0; i < nb; i++){
-			this.weights.push(self.options.randomClamped());
+			this.weights[i] = self.options.randomClamped();
 		}
 	}
 	//LAYER
@@ -49,14 +48,15 @@ var Neuroevolution = function(options){
 	Layer.prototype.populate = function(nbNeurons, nbInputs){
 		this.neurons = [];
 		for(var i = 0; i < nbNeurons; i++){
-			var n = new Neuron();
+			var n = new Neuron(nbInputs);
 			n.populate(nbInputs);
 			this.neurons.push(n);
 		}
 	}
 	//NETWORK
-	var Network = function(){
+	var Network = function(output){
 		this.layers = [];
+		this.out = new Float32Array(output);
 	}
 
 	Network.prototype.perceptronGeneration = function(input, hiddens, output){
@@ -118,30 +118,34 @@ var Neuroevolution = function(options){
 	}
 
 	Network.prototype.compute = function(inputs){
-		for(var i in inputs){
+		var i, j, k, l, m, n, sum, prevLayer = this.layers[0];
+
+		l = inputs.length;
+		for (i = 0; i < l; i++) {
 			if(this.layers[0] && this.layers[0].neurons[i]){
 				this.layers[0].neurons[i].value = inputs[i];
 			}
 		}
 
-		var prevLayer = this.layers[0];
-		for(var i = 1; i < this.layers.length; i++){
-			for(var j in this.layers[i].neurons){
-				var sum = 0;
-				for(var k in prevLayer.neurons){
+		l = this.layers.length;
+		for(i = 1; i < l; i++){
+			n = this.layers[i].neurons.length;
+			for (j = 0; j < n; j++) {
+				sum = 0;
+				m = prevLayer.neurons.length;
+				for(k = 0; k < m; k++){
 					sum += prevLayer.neurons[k].value * this.layers[i].neurons[j].weights[k];
 				}
-				this.layers[i].neurons[j].value = self.options.activation(sum);
+				this.layers[i].neurons[j].value = (1/(1 + Math.exp((-sum)/1))); // self.options.activation(sum)
 			}
 			prevLayer = this.layers[i];
-		} 
-
-		var out = [];
-		var lastLayer = this.layers[this.layers.length - 1];
-		for(var i in lastLayer.neurons){
-			out.push(lastLayer.neurons[i].value);
 		}
-		return out;
+
+		var lastLayer = this.layers[this.layers.length - 1];
+		for(i = 0; i < this.out.length; i++){
+			this.out[i] = lastLayer.neurons[i].value;
+		}
+		return this.out;
 	}
 	//GENOM
 	var Genome = function(score, network){
@@ -235,7 +239,7 @@ var Neuroevolution = function(options){
 	Generations.prototype.firstGeneration = function(input, hiddens, output){
 		var out = [];
 		for(var i = 0; i < self.options.population; i++){
-			var nn = new Network();
+			var nn = new Network(output);
 			nn.perceptronGeneration(self.options.network[0], self.options.network[1], self.options.network[2]);
 			out.push(nn.getSave());
 		}
@@ -279,7 +283,7 @@ var Neuroevolution = function(options){
 		}
 		var nns = [];
 		for(var i in networks){
-			var nn = new Network();
+			var nn = new Network(self.options.network[2]);
 			nn.setSave(networks[i]);  
 			nns.push(nn);
 		}

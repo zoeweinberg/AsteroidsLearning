@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>NE Viewer</title>
+	<style>
+		body {
+			font-family: monospace;
+		}
+		input[type=range] {
+			height: 25px;
+			width: 100px;
+			vertical-align: middle;
+		}
+		#l1 label {
+			display: inline-block;
+			width: 15px;
+			vertical-align: middle;
+		}
+		.layer {
+			display: inline-block;
+			vertical-align: middle;
+			text-align: center;
+			width: 120px;
+		}
+		.neurom {
+			display: block;
+			margin: auto;
+			border-radius: 5px;
+			width: 50px;
+			height: 23px;
+			border: 1px solid #333;
+			background: #333;
+		}
+	</style>
+</head>
+<body>
+	<div class="layer" id="l1"></div>
+	<div class="layer" id="l2"></div>
+	<div class="layer" id="l3"></div>
+	<script src="Neuroevolution.js"></script>
+	<script src="sample.js"></script>
+	<script>
+	nevo = new Neuroevolution({
+		population: 1,
+		network:[16 + 5 + 1, [9], 5],
+		randomBehaviour:0.3,
+		mutationRate:0.4, 
+		mutationRange:0.8, 
+	});
+	var gen = nevo.nextGeneration();
+	if (localStorage.nn7gen) {
+		var net = JSON.parse(localStorage.nn7gen)[10];
+	} else {
+		var net = hero;
+	}
+	
+	gen[0].setSave(net);
+
+	function compute() {
+		var output = gen[0].compute(inputElements.map(i => i.value));
+
+		gen[0].layers[1].neurons.forEach((o, i) => {
+			oc = Math.round(o.value * 255);
+			l1e[i].style.background = 'rgb('+oc+','+oc+','+oc+')';
+		});
+
+		output.forEach((o, i) => {
+			oc = Math.round(o * 255);
+			outputElements[i].style.background = 'rgb('+oc+','+oc+','+oc+')';
+		});
+	}
+
+	var inputs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0.25, 0, 0, 0.5];
+	var inputElements = Array(inputs.length);
+	var layer = document.getElementById('l1');
+	for (var i = 0; i < inputs.length; i++) {
+		var input = document.createElement('input');
+		[['type', 'range'],['min',0],['max',1],['step','0.0001']].forEach(a => {
+			input.setAttribute(...a);
+		});
+		input.value = inputs[i];
+		input.oninput = compute;
+		inputElements[i] = input;
+
+		var label = document.createElement('label');
+		label.innerText = i;
+		layer.appendChild(label);
+		layer.appendChild(input);
+	}
+	function createLayerElements(neuroms, layer, labels) {
+		if (!labels) labels = [];
+		neuromElements = Array(neuroms.length);
+		for (var i = 0; i < neuroms.length; i++) {
+			var neurom = document.createElement('div');
+			[['class', 'neurom']].forEach(a => {
+				neurom.setAttribute(...a);
+			});
+			neuromElements[i] = neurom;
+
+			var label = document.createElement('label');
+			label.innerText = labels[i] || i;
+			layer.appendChild(label);
+
+			layer.appendChild(neurom);
+		}
+		return neuromElements;
+	}
+
+	neuroms = Array(net.neurons[1]).fill(1);
+	layer = document.getElementById('l2');
+	l1e = createLayerElements(neuroms, layer);
+
+	neuroms = Array(net.neurons[2]).fill(1);
+	layer = document.getElementById('l3');
+	outputElements = createLayerElements(neuroms, layer, ['x', 'y', 'cursor', 'writer', 'value']);
+
+	compute();
+	</script>
+</body>
+</html>
