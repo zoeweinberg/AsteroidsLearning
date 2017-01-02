@@ -18,4 +18,4 @@ Program that learns to avoid Asteroids by machine learning. The operation is alm
 - [Interactive Mode](https://vcasagrand.github.io/AsteroidsLearning/test.html)
 
 ### Notes
-- Only tested with Google Chrome
+- Tested with Google Chrome and Mozilla Firefox

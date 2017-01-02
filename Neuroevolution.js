@@ -239,7 +239,7 @@ var Neuroevolution = function(options){
 	Generations.prototype.firstGeneration = function(input, hiddens, output){
 		var out = [];
 		for(var i = 0; i < self.options.population; i++){
-			var nn = new Network(output);
+			var nn = new Network(self.options.network[2]);
 			nn.perceptronGeneration(self.options.network[0], self.options.network[1], self.options.network[2]);
 			out.push(nn.getSave());
 		}
@@ -277,7 +277,7 @@ var Neuroevolution = function(options){
 	self.nextGeneration = function(){
 		var networks = [];
 		if(self.generations.generations.length == 0){
-			networks = self.generations.firstGeneration();
+			networks = self.generations.firstGeneration(this.options.network[2]);
 		}else{
 			networks = self.generations.nextGeneration();
 		}
