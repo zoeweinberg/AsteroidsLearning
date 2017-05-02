@@ -1,4 +1,4 @@
-# Asteroids Learning ([Demo](https://vcasagrand.github.io/AsteroidsLearning/))
+# Asteroids Learning ([Demo](https://vcasagrande.github.io/AsteroidsLearning/))
 
 Program that learns to avoid Asteroids by machine learning. The operation is almost the same as [Flappy Learning](https://github.com/xviniette/FlappyLearning) with 16 sensors of distance all around the ship.
 
@@ -14,8 +14,8 @@ Program that learns to avoid Asteroids by machine learning. The operation is alm
 - Trained network sample included
 
 ### Extra
-- [Network Viewer](https://vcasagrand.github.io/AsteroidsLearning/viewer.html)
-- [Interactive Mode](https://vcasagrand.github.io/AsteroidsLearning/test.html)
+- [Network Viewer](https://vcasagrande.github.io/AsteroidsLearning/viewer.html)
+- [Interactive Mode](https://vcasagrande.github.io/AsteroidsLearning/test.html)
 
 ### Notes
 - Tested with Google Chrome and Mozilla Firefox
