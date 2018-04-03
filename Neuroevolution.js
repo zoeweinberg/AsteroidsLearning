@@ -1,9 +1,8 @@
 var Neuroevolution = function(options){
 	var self = this;
 	self.options = {
-		activation:function(a){
-			ap = (-a)/1;
-			return (1/(1 + Math.exp(ap)))
+		activation:function(graph_x){ //Note: Z.W. changed the parameter from "a" to "graph_x"
+			return Math.max(0, graph_x); //This is the standard ReLU activation function.
 		},
 		randomClamped:function(){
 			return Math.random() * 2 - 1;
