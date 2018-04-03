@@ -1,10 +1,11 @@
-# Asteroids Learning ([Demo](https://vcasagrande.github.io/AsteroidsLearning/))
+# Asteroids Learning ([Demo](https://zoeweinberg.github.io/AsteroidsLearning/))
 
 Program that learns to avoid Asteroids by machine learning. The operation is almost the same as [Flappy Learning](https://github.com/xviniette/FlappyLearning) with 16 sensors of distance all around the ship.
 
 ![alt tag](https://github.com/xviniette/AsteroidsLearning/blob/gh-pages/img/asteroidlearning.png?raw=true)
 
 ## In This Fork
+- ReLU activation function for better learning (however, the pre-trained robots are unaccustomed to it, so give them about 40 generations to show ReLU's improvement)
 - Performance optimizations on Neuroevolution.js (Typed Arrays, loop optimizations, reduced variable declarations, etc.)
 - Changed population from 50 to 200
 - "Wall" distance sensor fixed
