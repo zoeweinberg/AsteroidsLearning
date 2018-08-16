@@ -1,4 +1,3 @@
-# new branch test
 # Asteroids Learning ([Demo](https://zoeweinberg.github.io/AsteroidsLearning/))
 
 Program that learns to avoid Asteroids by machine learning. The operation is almost the same as [Flappy Learning](https://github.com/xviniette/FlappyLearning) with 16 sensors of distance all around the ship.
