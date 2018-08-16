@@ -1,21 +1,60 @@
+<!-- Project: AsteroidsLearning7_ReLU -->
+
 <!DOCTYPE html>
-<html>
+
 <head>
-	<title>NeuroEvolution : Asteroids</title>
+  <!-- http://stackoverflow.com/questions/24604466/the-character-encoding-of-the-plain-text-document-was-not-declared-mootool-scr -->
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <!-- https://www.w3schools.com/TAGS/tag_comment.asp -->
+
+	<title>NeuroEvolution7 : Asteroids</title>
 </head>
-<body>
+<body data-gr-c-s-loaded="true"> 
 	<canvas id="asteroids" width="500" height="500"></canvas> <br/>
-    <button onclick="speed(-1)">auto</button>
-	<button onclick="speed(60)">x1</button> 
-	<button onclick="speed(120)">x2</button> 
-	<button onclick="speed(180)">x3</button> 
-	<button onclick="speed(300)">x5</button>
+	<p> Use the arrow keys to control the cyan bordered spaceship. <br/>
+	Original work by xviniette at 
+	<a href="https://github.com/xviniette/AsteroidsLearning">xviniette's Asteroids GitHub Repository</a> <br/>
+	Edits by Zoe Weinberg at <a href="https://github.com/zoeweinberg">ZW's GitHub Repository</a> <br/>
+  
+    Game speed (FPS):
+    <button onclick="speed(-1)">Snail (for debugging)</button>
+    <button onclick="speed(15)">15</button>
+    <button onclick="speed(20)">20</button>
+    <button onclick="speed(30)">30</button>
+    <button onclick="speed(60)">60 (default)</button>
+    <button onclick="speed(120)">120</button>
+    <button onclick="speed(180)">180</button>
+    <button onclick="speed(300)">300</button>
+    <button onclick="speed(600)">600</button>
     <button onclick="speed(0)">max</button>
-    <button onclick="clearData(); location.reload()">clear</button> <a href="test.html">Interactive Mode</a>
-    <br/>
-	<a href="https://github.com/zoeweinberg/AsteroidsLearning">GitHub Repository</a>
-	<script src = "Neuroevolution.js"></script>
-	<script src = "sample.js"></script>
-	<script src = "game.js"></script>
+    <button onclick="toggleShouldDrawImages()">toggle images</button>
+    <button onclick="toggleShouldDrawSensors()">toggle draw sensors
+    </button>
+    <button onclick="toggleShouldShowText()">toggle show text</button>
+  </p>
+  <input type="text" id="mytext">
+  <button onclick="saveGame()">Save Game</button>	<br/>
+  <input type="text" id="setmytext">
+  <button onclick="loadGame()">Load Game</button>	<br/>
+
+  <!-- 2 different versions -->
+  <script src = "Neuroevolution.js"></script>
+  <script src = "Neuroevolution_ReLU.js"></script>
+  
+  <script src = "game.js"></script>
+  <script>
+    //http://stackoverflow.com/questions/10311341/confirmation-before-closing-of-tab-browser
+    window.onbeforeunload = function (e) {
+        e = e || window.event;
+    
+        // For IE and Firefox prior to version 4
+        if (e) {
+            e.returnValue = 'Sure?';
+        }
+    
+        // For Safari
+        return 'Sure?';
+    };
+  </script>
 </body>
 </html>

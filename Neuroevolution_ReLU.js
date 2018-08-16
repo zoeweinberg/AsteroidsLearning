@@ -1,3 +1,7 @@
+//Project: AsteroidsLearning7_ReLU
+//File: Neuroevolution_ReLU.js
+//This version of Neuroevolution class uses ReLU activation instead of the sigmoidal activation function.
+
 var neuroevolutionStaticCounter = 0.436; //seed //note this is a different variable than game.js's staticCounter
 neuroevolutionCustomRandom = function() {
 	neuroevolutionStaticCounter += 0.3974;
@@ -7,13 +11,11 @@ neuroevolutionCustomRandom = function() {
 	return Math.random(); //result;
 };
 
-var Neuroevolution = function(options){
+var Neuroevolution_ReLU = function(options){
 	var self = this;
 	self.options = {
-		activation:function(a){
-			ap = -a;//(-a)/1;
-			return (1/(1 + Math.exp(ap))); //the original activation function from github
-			//it looks sigmoidal
+		activation:function(graph_x){ //Note: I changed the parameter from "a" to "graph_x"
+			return Math.max(0, graph_x); //This is the standard ReLU activation function.
 		},
 		randomClamped:function(){
 		  //aug2//console.log("calling neuroevolutionCustomRandom() in randomClamped");
@@ -192,7 +194,7 @@ var Neuroevolution = function(options){
 		
 		if(shouldPrint) {
 		  //aug11//console.log("this.layers[1].neurons[0].weights[0] is "
-				//aug11//+ this.layers[1].neurons[0].weights[0]);  
+			//aug11//	+ this.layers[1].neurons[0].weights[0]);  
 		}
 		
 		for(var i2 = 1; i2 < this.layers.length; i2++){
@@ -412,7 +414,7 @@ var Neuroevolution = function(options){
 				self.generations.generations.splice(0, self.generations.generations.length - (self.options.historic + 1));
 				
 				//aug11//console.log("after splice, self.generations.generations: ", 
-				  //aug11//self.generations.generations);
+				//aug11//  self.generations.generations);
 				//aug11//for(var iGeneration in self.generations.generations) {
 				  //aug11//console.log(self.generations.generations[iGeneration]);
 				//aug11//}
